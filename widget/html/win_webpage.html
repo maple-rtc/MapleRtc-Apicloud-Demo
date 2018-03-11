@@ -1,0 +1,267 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <style>
+        header{ background-color: #FCFCFC; line-height: 42px; height: 42px; position: relative; }
+        header b{ width: 42px; height: 100%; display: inline-block; position: relative; z-index: 1; background: url() no-repeat center; background-size: 70% auto;  }
+        header b.ic-back{ background-image: url(../image/ic-back.png); }
+        header b.ic-check{ background-image: url(../image/ic-check.png); float: right; }
+        header .title{ position: absolute; left: 0; bottom: 0; right: 0;  text-align: center; font-size: 18px;  }
+    </style>
+</head>
+<body>
+<div id="wrap" class="flex-wrap flex-vertical" >
+    <header class="border-b" >
+        <b tapmode="hover" onclick="goback();" class="ic-back"></b>
+        <div class="title"></div>
+        <b tapmode="hover" onclick="funActionSheet();"  class="ic-check"></b>
+    </header>
+    <div id="main" class="flex-con" >
+
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var mode;
+    var session;
+    var buttons;
+    var callback;
+    var mute = false;
+    var speakerphone = true;
+    var micAndSpeakerphone = true;
+    var isPreview = false;
+    var isSendingVideo = false;
+    var isRemoteVideo = false;
+    var isBeautify = false;
+    var ownUid;
+    var maplertc;
+
+    var userid;
+    apiready = function(){
+        $api.fixStatusBar( $api.dom('header') );
+        $api.dom('.title').innerHTML = api.pageParam.name;
+        api.openFrame({
+            name: 'frm_mine',
+            url: './frm_mine.html',
+            rect: {
+                x: 0, 
+                y: $api.dom('header').offsetHeight, 
+                w: api.winWidth, 
+                h: $api.dom('#main').offsetHeight
+            },
+            bounces : true,
+            pageParam: {
+                name: api.pageParam.name
+           }
+        });
+
+        api.openFrame({
+                      name: 'frm_float',
+                      url: './frm_float.html',
+                      rect: {
+                      x: api.winWidth - 130,
+                      y: api.winHeight - 170,
+                      w: 120,
+                      h: 160
+                      },
+                      bounces : true,
+                      pageParam: {
+                      name: api.pageParam.name
+                      }
+                      });
+        api.addEventListener({
+                             name:'viewdisappear'
+                             },function(ret,err){
+                                stopSDK();
+                             });
+        mode = api.pageParam.index;
+        session = api.pageParam.session;
+        alert(JSON.stringify(session));
+        maplertc = api.require('mapleRTC');
+        maplertc.addEventListener({name: 'joinChannelSuccessListener'}, function(ret) {
+                ownUid = ret.uid;
+                maplertc.setupLocalVideo({localView: {fixedOn: 'frm_float'}},  function(ret) {
+                                //api.toast({msg:JSON.stringify(ret)});
+                            });
+
+        });
+        maplertc.addEventListener({name: 'joinChannelFailedListener'}, function(ret) {api.toast({msg:"join channel failed."})});
+        maplertc.addEventListener({name: 'connectionLostListener'}, function(ret) {api.toast({msg:"connection lost."})});
+
+        maplertc.addEventListener({name: 'leaveChannelListener'}, function(ret) {
+                                        api.toast({msg:JSON.stringify(ret)});
+                                       });
+        maplertc.addEventListener({name: 'forceKickOutChannelListener'}, function(ret) {
+                                        api.toast({msg:"force kickout channel"});
+                                       });
+        maplertc.addEventListener({name: 'firstRemoteVideoFrameSizeChangedListener'}, function(ret) {
+                                        api.toast({msg:"first remote video frame"});
+                                       });
+        maplertc.addEventListener({name: 'audioVolumeIndicationListener'}, function(ret) {
+                                        api.toast({msg:JSON.stringify(ret)});
+                                   });
+        maplertc.addEventListener({name: 'userJoinedNoticeListener'}, function(ret) {
+                                        //api.toast({msg:ret.uids.length});
+                                        for(var i=0; i < ret.uids.length; i++){
+                                            api.toast({msg:JSON.stringify(ret.uids[i])});
+                                        }
+                                   });
+        maplertc.setChannelProfile({profile:'voiceAndVideo'});
+        maplertc.setVideoConferenceProfile({profile:'sfu'});
+        maplertc.setMediaProfile({audioProfile:'voiceHighQuality', videoProfile:'320P'});
+        maplertc.joinChannel(session, function(ret) {
+           //api.toast({msg:JSON.stringify(ret)});
+        });
+
+        if (mode == 1) {
+            buttons = ['开关扬声器','开关麦克风','切换麦克风和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜'];
+            callback = function(ret) {
+                switch(ret.buttonIndex) {
+                    case 1:
+                    {
+                        var value;
+                        speakerphone = !speakerphone;
+                        if(speakerphone){
+                            value = 200;
+                        }else{
+                            value = 0;
+                        }
+                        maplertc.adjustPlaybackSignalVolume({volume:value}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                        });
+                    }
+                    break;
+
+                    case 2:
+                    {
+                        mute = !mute;
+                        maplertc.muteLocalAudioStream({muted : mute},  function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                    }
+                    break;
+
+                    case 3:
+                   {
+                        micAndSpeakerphone = !micAndSpeakerphone;
+                        maplertc.setEnableSpeakerphone({enabled : micAndSpeakerphone},  function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                    }
+                    break;
+
+                    case 4:
+                    {
+                        isPreview = !isPreview;
+                        if(isPreview){
+                            maplertc.startPreview(function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                        }else{
+                            maplertc.stopPreview(function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                        }
+                    }
+                    break;
+
+                    case 5:
+                    {
+
+                        maplertc.muteLocalVideoStream({muted: isSendingVideo}, function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                        });
+                        isSendingVideo = !isSendingVideo;
+                    }
+
+                    break;
+
+                    case 6:
+                    {
+                        maplertc.switchCamera();
+                    }
+                    break;
+
+                    case 7:
+                    {
+                        inputUid();
+
+                    }
+
+                    break;
+                    case 8:
+                    {
+                        isBeautify = !isBeautify;
+                        maplertc.enableBeautify({enabled: isBeautify}, function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                    }
+                    break;
+
+                }
+            };
+    
+        } else {
+            buttons = ['按钮1','按钮2','按钮3'];
+            callback = function(){};
+        }
+    };
+
+
+    function inputUid() {
+        api.prompt({
+               title: '输入观看者用户ID',
+               buttons: ['确定', '取消']
+               },function( ret, err ){
+               var uid = ret.text;
+               if (ret.buttonIndex != 1)
+               return;
+               if(isRemoteVideo == false){
+               maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_mine'}, userId: uid},  function(ret) {
+                                //api.toast({msg:JSON.stringify(ret)});
+                            });
+               maplertc.muteRemoteVideoStream({userId: uid , muted: isRemoteVideo}, function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+               }else{
+               maplertc.setupRemoteVideo({remoteView: '', userId: uid},  function(ret) {
+                                //api.toast({msg:JSON.stringify(ret)});
+                            });
+               maplertc.muteRemoteVideoStream({userId: uid , muted: isRemoteVideo}, function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+               }
+
+               isRemoteVideo = !isRemoteVideo;
+               });
+    }
+
+    function funActionSheet(){
+        api.actionSheet({
+            title: '底部弹出框',
+            cancelTitle: '取消',
+            buttons: buttons
+        },function(ret,err){
+                        callback(ret);
+        });
+    }
+
+    function goback() {
+        stopSDK();
+        api.closeWin();
+    }
+
+function stopSDK() {
+    if (maplertc)
+        maplertc.leaveChannel();
+
+}
+
+</script>
