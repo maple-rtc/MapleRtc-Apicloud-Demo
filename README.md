@@ -22,7 +22,7 @@ maple-rtc 为蓝蘑云推出的实时音视频系统，包括了实时音频，�
 ## 运行示例程序
 首先在 联系对接群 **701150764** 注册账号，获取到 AppID。将 AppID 填写进 config.xml的appId的value中；
 
-<img src="http://doc.lmaple.com/md/maple-rtc-apicloud_2.png" width="500">
+<img src="http://doc.lmaple.com/image/maple-rtc-apicloud_2.png" width="500">
 
 ```
   <feature name="mapleRTC">
