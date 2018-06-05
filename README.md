@@ -1,6 +1,6 @@
 # MapleRtc-Apicloud-Demo
 ## 简介：
-maple-rtc 为蓝蘑云推出的实时音视频系统，包括了实时音频，视频，变声，美颜等功能，适用于娱乐，游戏，教育等实时场景中；
+maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，包括了实时音频，视频，变声，美颜等功能，适用于娱乐，游戏，教育等实时场景中；
 
 ----------
 - 完整的 API 文档见 [文档中心](http://doc.lmaple.com/maple-rtc-apicloud-sdk.html)
@@ -20,7 +20,7 @@ maple-rtc 为蓝蘑云推出的实时音视频系统，包括了实时音频，�
 - 切换前后摄像头功能；
 
 ## 运行示例程序
-首先在 联系对接群 **701150764** 注册账号，获取到 AppID。将 AppID 填写进 config.xml的appId的value中；
+首先在 联系对接群 **701150764**, [蓝蘑云后台管理](http://account.lmaple.com) 注册账号，获取到 appID。将 appID 填写进 config.xml的appId的value中；
 
 <img src="http://doc.lmaple.com/image/maple-rtc-apicloud_2.png" width="500">
 
@@ -30,7 +30,7 @@ maple-rtc 为蓝蘑云推出的实时音视频系统，包括了实时音频，�
   </feature>
 ```
 
-然后在 [maple-rtc SDK](http://sdk.lmaple.com/MapleRtc_ApiCloud_SDK_Release-2.0.0_20180309.zip) 下载 **maple-rtc  SDK for Apicloud**，解压后将其中的 **mapleRTC.zip** 文件夹复制到本项目的指定目录下。
+然后在 [maple-rtc SDK](http://sdk.lmaple.com/MapleRtc_ApiCloud_SDK_Release.zip) 下载 **maple-rtc  SDK for Apicloud**，解压后将其中的 **mapleRTC.zip** 文件夹复制到本项目的指定目录下。
 
 - 建议在[apicloud 控制平台](https://www.apicloud.com/)进行云编译运行；
 
@@ -46,3 +46,13 @@ maple-rtc 为蓝蘑云推出的实时音视频系统，包括了实时音频，�
 ## 联系我们
 
 对接qq群  **701150764**
+
+## Demo
+注：android可以测试运行，iOS 打包的为开发者账号，只能部分机子可以测试运行；
+<div style="display:flex;" >
+android:
+<img style="margin-left:10px;" src="pic/mapleRTCDemo-android.png" width="19%" >
+iOS:
+<img style="margin-left:10px;" src="pic/mapleRTCDemo-iOS.png" width="19%" >
+</div>
+
