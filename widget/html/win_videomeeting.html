@@ -147,7 +147,7 @@
                     maplertc.muteRemoteVideoStream2({userId:"" , muted: false}, function(ret) {
                         api.toast({msg:JSON.stringify(ret)});
                     });*/
-                    return;
+                    continue;
                 }
                 //设置远端视频显示view
                 maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ret.uids[i]},  function(ret) {
