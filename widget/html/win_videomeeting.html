@@ -163,7 +163,17 @@
 
         //用户离开通知监听
         maplertc.addEventListener({name: 'userOfflineNoticeListener'}, function(ret) {
+            for(var i=0; i < ret.uids.length; i++){
+                //暂停远端视频
+                maplertc.muteRemoteVideoStream({userId: ret.uids[i] , muted: true}, function(ret) {
+                    api.toast({msg:JSON.stringify(ret)});
+                });
 
+                //移除远端视频显示view
+                maplertc.setupRemoteVideo({remoteView: '', userId: ret.uids[i]},  function(ret) {
+                    api.toast({msg:JSON.stringify(ret)});
+                });
+            }
         });
 
         //参数设置
