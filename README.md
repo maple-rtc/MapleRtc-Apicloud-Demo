@@ -49,10 +49,10 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 
 ## Demo
 注：android可以测试运行，iOS 打包的为开发者账号，只能部分机子可以测试运行；
-<div style="display:flex;" >
 android:
-<img style="margin-left:10px;" src="pic/mapleRTCDemo-android.png" width="19%" >
+[Android演示Demo](https://fir.im/mapleandroid)
+
 iOS:
-<img style="margin-left:10px;" src="pic/mapleRTCDemo-iOS.png" width="19%" >
-</div>
+[iOS演示Demo](https://fir.im/mapleios)
+
 
