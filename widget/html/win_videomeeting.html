@@ -190,7 +190,7 @@
         });
 
         if (mode == 1) {
-            buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜'];
+            buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级'];
             callback = function(ret) {
                 switch(ret.buttonIndex) {
                     case 1:
@@ -276,6 +276,12 @@
                         maplertc.enableBeautify({enabled: isBeautify}, function(ret) {
                                 api.toast({msg:JSON.stringify(ret)});
                         });
+                        break;
+                    }
+                    
+                    case 9:
+                    {
+                        inputBeautifyLevel();
                     }
                     break;
                 }
@@ -285,6 +291,20 @@
             callback = function(){};
         }
     };
+
+    function inputBeautifyLevel() {
+        api.prompt({
+               title: '输入美颜等级（0.0～1.0）',
+               buttons: ['确定', '取消']
+               },function( ret, err ){
+                   var level = ret.text;
+                   if (ret.buttonIndex != 1)
+                    return;
+                   maplertc.setBeautifyLevel({level: level}, function(ret) {
+                    api.toast({msg:JSON.stringify(ret)});
+                    });
+               });
+    }
 
     function inputUid() {
         api.prompt({
