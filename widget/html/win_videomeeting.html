@@ -140,23 +140,23 @@
             for(var i=0; i < ret.uids.length; i++){
                 if(ownUid == ret.uids[i]){
                     //设置远端视频显示view
-                    /*maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ""},  function(ret) {
+                    maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ""},  function(ret) {
                         api.toast({msg:JSON.stringify(ret)});
                     });
                     //观看远端视频
                     maplertc.muteRemoteVideoStream2({userId:"" , muted: false}, function(ret) {
                         api.toast({msg:JSON.stringify(ret)});
-                    });*/
+                    });
                     continue;
                 }
                 //设置远端视频显示view
-                maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ret.uids[i]},  function(ret) {
+                /*maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ret.uids[i]},  function(ret) {
                     api.toast({msg:JSON.stringify(ret)});
                 });
                 //观看远端视频
                 maplertc.muteRemoteVideoStream2({userId:ret.uids[i] , muted: false}, function(ret) {
                     api.toast({msg:JSON.stringify(ret)});
-                });
+                });*/
             //api.toast({msg:JSON.stringify(ret.uids[i])});
             }
         });
