@@ -8,6 +8,8 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 ----------
 这个开源项目演示了如何快速集成 maple-rtc SDK 到 apicloud 中，实现在apicloud应用中音频通话效果。
 
+注意：该demo包括master和1v1sample两个分支，如果您场景为1对1视频通话，请参考1v1sample 分支。
+
 在这个示例项目中包含了以下功能：
 - 加入通话和离开通话；
 - 打开／关闭本地麦克风说话；
@@ -18,6 +20,7 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 - 打开／关闭显示远端视频；
 - 打开／关闭美颜功能；
 - 切换前后摄像头功能；
+
 
 ## 运行示例程序
 首先在 联系对接群 **701150764**, [蓝蘑云后台管理](http://account.lmaple.com) 注册账号，获取到 appID。将 appID 填写进 config.xml的appId的value中；
@@ -49,10 +52,17 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 
 ## Demo
 注：android可以测试运行，iOS 打包的为开发者账号，只能部分机子可以测试运行；
+
 android:
-[Android演示Demo](https://fir.im/mapleandroid)
+[Android 视频会议演示Demo](https://fir.im/mapleandroid)
 
 iOS:
-[iOS演示Demo](https://fir.im/mapleios)
+[iOS 视频会议演示Demo](https://fir.im/mapleios)
+
+android:
+[Android 1对1视频通话演示Demo](https://fir.im/maple1v1android)
+
+iOS:
+[iOS 1对1视频通话演示Demo](https://fir.im/maple1v1ios)
 
 
