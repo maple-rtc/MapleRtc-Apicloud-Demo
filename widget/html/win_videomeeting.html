@@ -36,6 +36,8 @@
     var mute = false;
     var speakerphone = true;
     var micAndSpeakerphone = true;
+    var switchScreen = true;
+
     var isPreview = false;
     var isSendingVideo = false;
     var isRemoteVideo = false;
@@ -149,6 +151,29 @@
                 maplertc.muteRemoteVideoStream({userId:ret.uids[i] , muted: false}, function(ret) {
                     api.toast({msg:JSON.stringify(ret)});
                 });
+
+                api.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'})
+
+                api.setFrameAttr({name:'frm_remote', scaleEnabled: true,  rect: {
+                                 x: 0,
+                                 y: $api.dom('header').offsetHeight,
+                                 w: api.winWidth,
+                                 h: api.winHeight,
+                                 }})
+                api.setFrameAttr({name:'frm_local', scaleEnabled: true,  rect: {
+                                  x: api.winWidth - 130,
+                                  y: api.winHeight - 170,
+                                  w: 120,
+                                  h: 160
+                                  }})
+
+                if (api.systemType == 'android'){
+                    maplertc.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                }
+
+
             //api.toast({msg:JSON.stringify(ret.uids[i])});
             }
         });
@@ -180,7 +205,7 @@
         });
 
         if (mode == 1) {
-            buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级'];
+            buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级', '切换大小屏幕'];
             callback = function(ret) {
                 switch(ret.buttonIndex) {
                     case 1:
@@ -272,6 +297,57 @@
                     case 9:
                     {
                         inputBeautifyLevel();
+                        break;
+                    }
+
+                    case 10:
+                    {
+                        if(switchScreen){
+                            api.bringFrameToFront({ from: 'frm_remote', to: 'frm_local'})
+
+
+
+                            api.setFrameAttr({name:'frm_remote', scaleEnabled: true, rect: {
+                                             x: api.winWidth - 130,
+                                             y: api.winHeight - 170,
+                                             w: 120,
+                                             h: 160
+                                             }})
+
+                            api.setFrameAttr({name:'frm_local', rect: {
+                                              x: 0,
+                                              y: $api.dom('header').offsetHeight,
+                                              w: api.winWidth,
+                                              h: api.winHeight,
+                                              }})
+
+                            if (api.systemType == 'android'){
+                                maplertc.bringFrameToFront({ from: 'frm_remote', to: 'frm_local'}, function(ret) {
+                                    api.toast({msg:JSON.stringify(ret)});
+                                });
+                            }
+                        }else{
+                            api.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'})
+
+                            api.setFrameAttr({name:'frm_remote', scaleEnabled: true,  rect: {
+                                             x: 0,
+                                             y: $api.dom('header').offsetHeight,
+                                             w: api.winWidth,
+                                             h: api.winHeight,
+                                             }})
+                            api.setFrameAttr({name:'frm_local', scaleEnabled: true,  rect: {
+                                              x: api.winWidth - 130,
+                                              y: api.winHeight - 170,
+                                              w: 120,
+                                              h: 160
+                                              }})
+                            if (api.systemType == 'android'){
+                                maplertc.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'}, function(ret) {
+                                    api.toast({msg:JSON.stringify(ret)});
+                                });
+                            }
+                        }
+                        switchScreen = !switchScreen;
                     }
                     break;
                 }
