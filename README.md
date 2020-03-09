@@ -54,15 +54,15 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 注：android可以测试运行，iOS 打包的为开发者账号，只能部分机子可以测试运行；
 
 android:
-[Android 视频会议演示Demo](https://fir.im/mapleandroid)
+[Android 视频会议演示Demo](http://fir.kcrtu.com/mapleandroid)
 
 iOS:
-[iOS 视频会议演示Demo](https://fir.im/mapleios)
+[iOS 视频会议演示Demo](http://fir.kcrtu.com/mapleios)
 
 android:
-[Android 1对1视频通话演示Demo](https://fir.im/maple1v1android)
+[Android 1对1视频通话演示Demo](http://fir.kcrtu.com/maple1v1android)
 
 iOS:
-[iOS 1对1视频通话演示Demo](https://fir.im/maple1v1ios)
+[iOS 1对1视频通话演示Demo](http://fir.kcrtu.com/maple1v1ios)
 
 
