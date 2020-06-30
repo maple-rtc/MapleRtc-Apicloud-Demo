@@ -53,7 +53,22 @@
                  <div tapmode="hover" onclick="inputRoomInfo(this, 1 );" class="flex-wrap flex-con flex-2 layout-wrap">
                      <div class="flex-con layout ic-hot">
                         <h6>点击登录</h6>
-                        <p>简介:蓝蘑云apicloud视频会议演示程序，</p>
+                        <h7>多人语音房间</h7>
+                        <p>简介:蓝蘑云apicloud音视频演示程序</p>
+                     </div>
+                 </div>
+                 <div tapmode="hover" onclick="inputRoomInfo(this, 2 );" class="flex-wrap flex-con flex-2 layout-wrap">
+                     <div class="flex-con layout ic-hot">
+                        <h6>点击登录</h6>
+                        <h7>1对1视频房间</h7>
+                        <p>简介:蓝蘑云apicloud音视频演示程序</p>
+                     </div>
+                 </div>
+                 <div tapmode="hover" onclick="inputRoomInfo(this, 3 );" class="flex-wrap flex-con flex-2 layout-wrap">
+                     <div class="flex-con layout ic-hot">
+                        <h6>点击登录</h6>
+                        <h7>多人视频房间</h7>
+                        <p>简介:蓝蘑云apicloud音视频演示程序</p>
                      </div>
                  </div>
              </div>
@@ -107,15 +122,51 @@ var inputRoomInfo = function(tag, index) {
                         channelId: channelId,
                         userId: userId,
                     };
-                    api.openWin({
-                        name: 'videomeeting',
-                        url: './win_videomeeting.html',
-                        pageParam: {
-                            index: index,
-                            name: tag.querySelector('h6').innerHTML,
-                            session:session
+                    switch(index) {
+                        case 1:
+                        {
+                            api.openWin({
+                                name: 'videomeeting',
+                                url: './win_voicemeeting.html',
+                                pageParam: {
+                                    index: index,
+                                    name: tag.querySelector('h7').innerHTML,
+                                    session:session
+                                }
+                            });
+                            
+                            break;
                         }
-                    });
+                        case 2:
+                        {
+                            api.openWin({
+                                name: 'videomeeting',
+                                url: './win_videomeeting1v1.html',
+                                pageParam: {
+                                    index: index,
+                                    name: tag.querySelector('h7').innerHTML,
+                                    session:session
+                                }
+                            });
+                            
+                            break;
+                        }
+                        case 3:
+                        {
+                            api.openWin({
+                                name: 'videomeeting',
+                                url: './win_videomeeting.html',
+                                pageParam: {
+                                    index: index,
+                                    name: tag.querySelector('h7').innerHTML,
+                                    session:session
+                                }
+                            });
+                            
+                            break;
+                        }
+                    }
+                    
                 });
         });
 }

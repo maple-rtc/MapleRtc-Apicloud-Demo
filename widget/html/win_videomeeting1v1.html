@@ -152,40 +152,37 @@
         maplertc.addEventListener({name: 'userJoinedNoticeListener'}, function(ret) {
             for(var i=0; i < ret.uids.length; i++){
                 if(ownUid == ret.uids[i]){
-                    //设置远端视频显示view
-                    maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ""},  function(ret) {
-                        api.toast({msg:JSON.stringify(ret)});
-                    });
-                    //观看远端视频
-                    maplertc.muteRemoteVideoStream2({userId:"" , muted: false}, function(ret) {
-                        api.toast({msg:JSON.stringify(ret)});
-                    });
-
-
-                    api.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'})
-
-                    api.setFrameAttr({name:'frm_remote', scaleEnabled: true,  rect: {
-                                     x: 0,
-                                     y: $api.dom('header').offsetHeight,
-                                     w: api.winWidth,
-                                     h: api.winHeight,
-                                     }})
-                    
-                    api.setFrameAttr({name:'frm_local', scaleEnabled: true,  rect: {
-                                      x: api.winWidth - 130,
-                                      y: api.winHeight - 170,
-                                      w: 120,
-                                      h: 160
-                                      }})
-
-                    if (api.systemType == 'android')
-                    {
-                        //设置视频层级
-                        maplertc.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'}, function(ret) {
-                                api.toast({msg:JSON.stringify(ret)});
-                        });
-                    }
                     continue;
+                }
+                //设置远端视频显示view
+               maplertc.setupRemoteVideo({remoteView: {fixedOn: 'frm_remote'}, userId: ret.uids[i]},  function(ret) {
+                    api.toast({msg:JSON.stringify(ret)});
+                });
+                //观看远端视频
+                maplertc.muteRemoteVideoStream({userId:ret.uids[i] , muted: false}, function(ret) {
+                    api.toast({msg:JSON.stringify(ret)});
+                });
+
+                api.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'})
+
+                api.setFrameAttr({name:'frm_remote', scaleEnabled: true,  rect: {
+                                 x: 0,
+                                 y: $api.dom('header').offsetHeight,
+                                 w: api.winWidth,
+                                 h: api.winHeight,
+                                 }})
+                api.setFrameAttr({name:'frm_local', scaleEnabled: true,  rect: {
+                                  x: api.winWidth - 130,
+                                  y: api.winHeight - 170,
+                                  w: 120,
+                                  h: 160
+                                  }})
+
+                if (api.systemType == 'android'){
+                    //设置视频层级
+                    maplertc.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
                 }
             }
         });
@@ -216,11 +213,9 @@
         //参数设置
         //设置频道属性为音频+视频
         maplertc.setChannelProfile({profile:'voiceAndVideo'});
-        //设置MCU模式
-        maplertc.setVideoConferenceProfile({profile:'mcu'});
         //设置媒体模式
         maplertc.setMediaProfile({audioProfile:'voiceHighQuality', videoProfile:'360P'});
-
+        
         //加入频道
         maplertc.joinChannel(session, function(ret) {
            api.toast({msg:JSON.stringify(ret)});
