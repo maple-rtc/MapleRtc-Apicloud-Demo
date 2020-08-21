@@ -54,21 +54,35 @@
                      <div class="flex-con layout ic-hot">
                         <h6>点击登录</h6>
                         <h7>多人语音房间</h7>
-                        <p>简介:蓝蘑云apicloud音视频演示程序</p>
+                        <p>简介:蓝蘑云apicloud音视频演示程序，随意输入相同房间号，不同用户ID。</p>
                      </div>
                  </div>
                  <div tapmode="hover" onclick="inputRoomInfo(this, 2 );" class="flex-wrap flex-con flex-2 layout-wrap">
                      <div class="flex-con layout ic-hot">
                         <h6>点击登录</h6>
                         <h7>1对1视频房间</h7>
-                        <p>简介:蓝蘑云apicloud音视频演示程序</p>
+                        <p>简介:蓝蘑云apicloud音视频演示程序，随意输入相同房间号，不同用户ID。</p>
                      </div>
                  </div>
                  <div tapmode="hover" onclick="inputRoomInfo(this, 3 );" class="flex-wrap flex-con flex-2 layout-wrap">
                      <div class="flex-con layout ic-hot">
                         <h6>点击登录</h6>
                         <h7>多人视频房间</h7>
-                        <p>简介:蓝蘑云apicloud音视频演示程序</p>
+                        <p>简介:蓝蘑云apicloud音视频演示程序，随意输入相同房间号，不同用户ID。</p>
+                     </div>
+                 </div>
+                 <div tapmode="hover" onclick="inputRoomInfo(this, 4 );" class="flex-wrap flex-con flex-2 layout-wrap">
+                     <div class="flex-con layout ic-hot">
+                        <h6>点击登录</h6>
+                        <h7>直播视频推流</h7>
+                        <p>简介:蓝蘑云apicloud音视频演示程序,随意输入相同房间号，不同用户ID.</p>
+                     </div>
+                 </div>
+                 <div tapmode="hover" onclick="inputRoomInfo(this, 5 );" class="flex-wrap flex-con flex-2 layout-wrap">
+                     <div class="flex-con layout ic-hot">
+                        <h6>点击登录</h6>
+                        <h7>直播视频播放</h7>
+                        <p>简介:蓝蘑云apicloud音视频演示程序,随意输入相同房间号，不同用户ID.</p>
                      </div>
                  </div>
              </div>
@@ -118,13 +132,16 @@ var inputRoomInfo = function(tag, index) {
                         api.toast({msg:JSON.stringify("用户ID不能为空!")});
                         return;
                     }
-                    session = {
-                        channelId: channelId,
-                        userId: userId,
-                    };
+                    
                     switch(index) {
                         case 1:
                         {
+                            session = {
+                                channelId: channelId,
+                                userId: userId,
+                                enableMic:true
+                            };
+                            
                             api.openWin({
                                 name: 'videomeeting',
                                 url: './win_voicemeeting.html',
@@ -139,6 +156,12 @@ var inputRoomInfo = function(tag, index) {
                         }
                         case 2:
                         {
+                            session = {
+                                channelId: channelId,
+                                userId: userId,
+                                enableMic:true
+                            };
+                            
                             api.openWin({
                                 name: 'videomeeting',
                                 url: './win_videomeeting1v1.html',
@@ -153,9 +176,53 @@ var inputRoomInfo = function(tag, index) {
                         }
                         case 3:
                         {
+                            session = {
+                                channelId: channelId,
+                                userId: userId,
+                                enableMic:true
+                            };
                             api.openWin({
                                 name: 'videomeeting',
                                 url: './win_videomeeting.html',
+                                pageParam: {
+                                    index: index,
+                                    name: tag.querySelector('h7').innerHTML,
+                                    session:session
+                                }
+                            });
+                            
+                            break;
+                        }
+                        case 4:
+                        {
+                            session = {
+                                channelId: channelId,
+                                userId: userId,
+                                enableMic:true
+                            };
+                            
+                            api.openWin({
+                                name: 'videolive',
+                                url: './win_videolive.html',
+                                pageParam: {
+                                    index: index,
+                                    name: tag.querySelector('h7').innerHTML,
+                                    session:session
+                                }
+                            });
+                            
+                            break;
+                        }
+                        case 5:
+                        {
+                            session = {
+                                channelId: channelId,
+                                userId: userId,
+                                enableMic:false
+                            };
+                            api.openWin({
+                                name: 'videolive',
+                                url: './win_videoplay.html',
                                 pageParam: {
                                     index: index,
                                     name: tag.querySelector('h7').innerHTML,

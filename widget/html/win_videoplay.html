@@ -6,7 +6,6 @@
     <title>title</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css" />
     <link rel="stylesheet" type="text/css" href="../css/style.css" />
-    <link rel="stylesheet" type="text/css" href="../css/chat.css"/>
     <style>
         header{ background-color: #FCFCFC; line-height: 42px; height: 42px; position: relative; }
         header b{ width: 42px; height: 100%; display: inline-block; position: relative; z-index: 1; background: url() no-repeat center; background-size: 70% auto;  }
@@ -16,20 +15,19 @@
     </style>
 </head>
 <body>
-    <div id="wrap" class="flex-wrap flex-vertical" >
-        <header class="border-b" >
-            <b tapmode="hover" onclick="goback();" class="ic-back"></b>
-            <div class="title"></div>
-            <b tapmode="hover" onclick="funActionSheet();"  class="ic-check"></b>
-        </header>
-        <div id="main" class="flex-con" >
-        </div>
+<div id="wrap" class="flex-wrap flex-vertical" >
+    <header class="border-b" >
+        <b tapmode="hover" onclick="goback();" class="ic-back"></b>
+        <div class="title"></div>
+        <b tapmode="hover" onclick="funActionSheet();"  class="ic-check"></b>
+    </header>
+    <div id="main" class="flex-con" >
+
     </div>
-    <div class="user-list" id="userList"></div>
+</div>
 </body>
 </html>
 <script type="text/javascript" src="../script/api.js"></script>
-<script type="text/javascript" src="../script/jquery.min.js"></script>
 <script type="text/javascript">
     var index;
     var session;
@@ -38,10 +36,11 @@
     var mute = false;
     var speakerphone = true;
     var micAndSpeakerphone = true;
-    var switchScreen = true;
+    var switchScreen = false;
 
-    var user_list = [];
-
+    var isPreview = false;
+    var isBeautify = false;
+    var isFrontOutputMirror = false;
     var isPausedMedia = true;
     var isMutedMedia = true;
 
@@ -52,7 +51,22 @@
     apiready = function(){
         $api.fixStatusBar( $api.dom('header') );
         $api.dom('.title').innerHTML = api.pageParam.name;
-
+                
+        //打开远端视频frame
+        api.openFrame({
+            name: 'frm_remote',
+            url: './frm_remote.html',
+            rect: {
+                x: 0,
+                y: $api.dom('header').offsetHeight,
+                w: api.winWidth,
+                h: api.winHeight
+            },
+            bounces : true,
+            pageParam: {
+                name: api.pageParam.name
+            }
+        });
         //view disappear 监听
         api.addEventListener({name:'viewdisappear'},function(ret,err){
             stopSDK();
@@ -67,10 +81,12 @@
         maplertc.addEventListener({name: 'joinChannelSuccessListener'}, function(ret) {
                                   
             ownUid = ret.uid;
-            //设置音频音量侦测间隔时间
-            //maplertc.enableAudioVolumeIndication({interval: 1000}, function(ret) {
-            //    api.toast({msg:JSON.stringify(ret)});
-            //});
+            //开始播放直播流
+            maplertc.startPlayMedia({path: "", type:2, cycle:1, mediaView: {fixedOn: 'frm_remote'}}, function(ret) {
+                    //api.toast({msg:JSON.stringify(ret)});
+                    isPausedMedia = false;
+                    isMutedMedia = false;
+            });
         });
         //加入频道失败监听
         maplertc.addEventListener({name: 'joinChannelFailedListener'}, function(ret) {
@@ -103,47 +119,49 @@
         maplertc.addEventListener({name: 'audioVolumeIndicationListener'}, function(ret) {
             api.toast({msg:JSON.stringify(ret)});
         });
+        
         //用户加入通知监听
         maplertc.addEventListener({name: 'userJoinedNoticeListener'}, function(ret) {
-            for(var i=0; i < ret.uids.length; i++){
-                user_list.push(ret.uids[i]);
-            }
-            var ht_user ='<div class="viewer-list-item aui-ellipsis-1 aui-padded-l-15">用户列表</div>';
-            var a = user_list.forEach(function(value,index,self){
-                ht_user += '<div class="viewer-list-item aui-ellipsis-1" tapmode>'+value+'</div>';
-            })
-            
-            $('#userList').html(ht_user);
         });
 
         //用户离开通知监听
         maplertc.addEventListener({name: 'userOfflineNoticeListener'}, function(ret) {
-            for(var i=0; i < ret.uids.length; i++){
-                user_list.splice(user_list.indexOf(ret.uids[i]),1);
-            }
             
-            var ht_user ='<div class="viewer-list-item aui-ellipsis-1 aui-padded-l-15">用户列表</div>';
-            var a = user_list.forEach(function(value,index,self){
-                ht_user += '<div class="viewer-list-item aui-ellipsis-1" tapmode>'+value+'</div>';
-            })
-            
-            $('#userList').html(ht_user);
         });
         
         //SDK错误监听
         maplertc.addEventListener({name: 'errorListener'}, function(ret) {
         if(ret.error == 4007)
-            api.alert({title:"提示", msg:"设备没有麦克风权限！"});
+            api.alert({title:"提示", msg:"设备没有录音或者摄像头权限！"});
         else
             api.toast({msg:JSON.stringify(ret)});
         });
-
+        
+        //直播播放回调状态
+        maplertc.addEventListener({name: 'livePlayListener'}, function(ret) {
+            if(ret.status == 0){
+                api.toast({msg:"无直播播放流，请先开始推流！"});
+                //开始播放直播流
+                maplertc.startPlayMedia({path: "", type:2, cycle:1, mediaView: {fixedOn: 'frm_remote'}}, function(ret) {
+                        //api.toast({msg:JSON.stringify(ret)});
+                                        isPausedMedia = false;
+                                        isMutedMedia = false;
+                });
+            }else if(ret.status == 1){
+                api.toast({msg:"正在开始拉取直播流！"});
+            }else if(ret.status == 2){
+                api.toast({msg:"已经在播放媒体流！"});
+            }
+        });
+        
+        //直播推流回调状态
+        maplertc.addEventListener({name: 'livePublishListener'}, function(ret) {
+            
+        });
+        
         //参数设置
-        //设置频道属性为音频
-        maplertc.setChannelProfile({profile:'voiceOnly'});
-		
-		//设置媒体模式
-        maplertc.setMediaProfile({audioProfile:'musicHighQuality', videoProfile:'360P'});
+        //设置频道属性为视频直播模式
+        maplertc.setChannelProfile({profile:'liveVideo'});
 
         //加入频道
         maplertc.joinChannel(session, function(ret) {
@@ -152,55 +170,20 @@
         });
 
         
-        buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器','播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置'];
+        buttons = ['播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量'];
         callback = function(ret) {
             switch(ret.buttonIndex) {
                 case 1:
                 {
-                    var value;
-                    speakerphone = !speakerphone;
-                    if(speakerphone){
-                        value = 100;
-                    }else{
-                        value = 0;
-                    }
-                    //开关扬声器
-                    maplertc.adjustPlaybackSignalVolume({volume:value}, function(ret) {
-                        api.toast({msg:JSON.stringify(ret)});
-                    });
-                }
-                break;
-
-                case 2:
-                {
-                    mute = !mute;
-                    //开关麦克风
-                    maplertc.muteLocalAudioStream({muted : mute},  function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
-                    });
-                }
-                break;
-
-                case 3:
-               {
-                    micAndSpeakerphone = !micAndSpeakerphone;
-                    //切换听筒和扬声器
-                    maplertc.setEnableSpeakerphone({enabled : micAndSpeakerphone},  function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
-                    });
-                }
-                break;
-
-                case 4:
-                {
-                    maplertc.startPlayMedia({path: "http://share.lmaple.com/test.mp3", type:3, cycle:1, mediaView: {}}, function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
+                    //开始播放直播流
+                    maplertc.startPlayMedia({path: "", type:2, cycle:1, mediaView: {fixedOn: 'frm_remote'}}, function(ret) {
+                            //api.toast({msg:JSON.stringify(ret)});
                                             isPausedMedia = false;
                                             isMutedMedia = false;
                     });
                     break;
                 }
-                case 5:
+                case 2:
                 {
                     isPausedMedia = !isPausedMedia;
                     maplertc.pausePlayMedia({paused: isPausedMedia}, function(ret) {
@@ -208,14 +191,14 @@
                     });
                     break;
                 }
-                case 6:
+                case 3:
                 {
                     maplertc.stopPlayMedia(function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
-                case 7:
+                case 4:
                 {
                     isMutedMedia = !isMutedMedia;
                     maplertc.mutePlayMedia({muted: isMutedMedia}, function(ret) {
@@ -223,37 +206,15 @@
                     });
                     break;
                 }
-                case 8:
+                case 5:
                 {
                     maplertc.adjustPlayMediaVolume({volume: 50}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
-                case 9:
-                {
-                    maplertc.setPlayMediaPosition({position: 10000}, function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
-                    });
-                    break;
-                }
-                case 10:
-                {
-                    maplertc.getPlayMediaTotalDuration(function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
-                    });
-                    break;
-                }
-                case 11:
-                {
-                    maplertc.getPlayMediaCurrentPosition(function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
-                    });
-                    break;
-                }
             }
         };
-        
     };
 
     function funActionSheet(){
@@ -277,3 +238,4 @@ function stopSDK() {
 }
 
 </script>
+

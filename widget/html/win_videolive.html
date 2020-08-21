@@ -1,0 +1,428 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0"/>
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+    <style>
+        header{ background-color: #FCFCFC; line-height: 42px; height: 42px; position: relative; }
+        header b{ width: 42px; height: 100%; display: inline-block; position: relative; z-index: 1; background: url() no-repeat center; background-size: 70% auto;  }
+        header b.ic-back{ background-image: url(../image/ic-back.png); }
+        header b.ic-check{ background-image: url(../image/ic-check.png); float: right; }
+        header .title{ position: absolute; left: 0; bottom: 0; right: 0;  text-align: center; font-size: 18px;  }
+    </style>
+</head>
+<body>
+<div id="wrap" class="flex-wrap flex-vertical" >
+    <header class="border-b" >
+        <b tapmode="hover" onclick="goback();" class="ic-back"></b>
+        <div class="title"></div>
+        <b tapmode="hover" onclick="funActionSheet();"  class="ic-check"></b>
+    </header>
+    <div id="main" class="flex-con" >
+
+    </div>
+</div>
+</body>
+</html>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    var index;
+    var session;
+    var buttons;
+    var callback;
+    var mute = false;
+    var speakerphone = true;
+    var micAndSpeakerphone = true;
+    var switchScreen = false;
+
+    var isPreview = false;
+    var isBeautify = false;
+    var isFrontOutputMirror = false;
+    var isPausedMedia = true;
+    var isMutedMedia = true;
+
+    var ownUid;
+    var maplertc;
+
+    var userid;
+    apiready = function(){
+        $api.fixStatusBar( $api.dom('header') );
+        $api.dom('.title').innerHTML = api.pageParam.name;
+        //打开本地视频frame
+        api.openFrame({
+            name: 'frm_local',
+            url: './frm_local.html',
+            rect: {
+                x: 0,
+                y: $api.dom('header').offsetHeight,
+                w: api.winWidth,
+                h: api.winHeight
+            },
+            bounces : true,
+            pageParam: {
+                name: api.pageParam.name
+            }
+        });
+        
+        //打开远端视频frame
+        api.openFrame({
+            name: 'frm_remote',
+            url: './frm_remote.html',
+            rect: {
+                x: api.winWidth - 130,
+                y: api.winHeight - 170,
+                w: 120,
+                h: 160
+            },
+            bounces : true,
+            pageParam: {
+                name: api.pageParam.name
+            }
+        });
+
+        
+
+        //view disappear 监听
+        api.addEventListener({name:'viewdisappear'},function(ret,err){
+            stopSDK();
+        });
+
+        index = api.pageParam.index;
+        session = api.pageParam.session;
+        //加载模块
+        maplertc = api.require('mapleRTC');
+
+        //加入频道成功监听
+        maplertc.addEventListener({name: 'joinChannelSuccessListener'}, function(ret) {
+                                  
+            ownUid = ret.uid;
+            //设置本地视频显示view
+            maplertc.setupLocalVideo({localView: {fixedOn: 'frm_local'}},  function(ret) {
+                api.toast({msg:JSON.stringify(ret)});
+            });
+            //开始显示本地预览
+            maplertc.startPreview(function(ret) {
+                api.toast({msg:JSON.stringify(ret)});
+                isPreview = true;
+            });
+        });
+        //加入频道失败监听
+        maplertc.addEventListener({name: 'joinChannelFailedListener'}, function(ret) {
+            api.toast({msg:"join channel failed."})
+        });
+        //连接丢失监听
+        maplertc.addEventListener({name: 'connectionLostListener'}, function(ret) {
+            api.toast({msg:"connection lost."})
+        });
+        //离开频道监听
+        maplertc.addEventListener({name: 'leaveChannelListener'}, function(ret) {
+            api.toast({msg:JSON.stringify(ret)});
+        });
+        //媒体播放停止监听
+        maplertc.addEventListener({name: 'mediaStopListener'}, function(ret) {
+            api.toast({msg:JSON.stringify(ret)});
+        });
+        //踢下线监听
+        maplertc.addEventListener({name: 'forceKickOutChannelListener'}, function(ret) {
+            if(ret.reason == 4200)
+                api.alert({title:"提示", msg:"强行被其他用户踢出频道！"});
+            if(ret.reason == 4201)
+                api.alert({title:"提示", msg:"强行被服务器踢出频道！"});
+        });
+        //第一个远端视频帧尺寸改变监听
+        maplertc.addEventListener({name: 'firstRemoteVideoFrameSizeChangedListener'}, function(ret) {
+            api.toast({msg:"first remote video frame"});
+        });
+        //声音音量提示监听
+        maplertc.addEventListener({name: 'audioVolumeIndicationListener'}, function(ret) {
+            api.toast({msg:JSON.stringify(ret)});
+        });
+        
+        //用户加入通知监听
+        maplertc.addEventListener({name: 'userJoinedNoticeListener'}, function(ret) {
+        });
+
+        //用户离开通知监听
+        maplertc.addEventListener({name: 'userOfflineNoticeListener'}, function(ret) {
+            
+        });
+        
+        //SDK错误监听
+        maplertc.addEventListener({name: 'errorListener'}, function(ret) {
+        if(ret.error == 4007)
+            api.alert({title:"提示", msg:"设备没有录音或者摄像头权限！"});
+        else
+            api.toast({msg:JSON.stringify(ret)});
+        });
+        
+        //直播播放回调状态
+        maplertc.addEventListener({name: 'livePlayListener'}, function(ret) {
+            api.toast({msg:JSON.stringify(ret)});
+        });
+        
+        //直播推流回调状态
+        maplertc.addEventListener({name: 'livePublishListener'}, function(ret) {
+            if(ret.status == 0){
+                api.toast({msg:"推送媒体流失败！"});
+            }else if(ret.status == 1){
+                api.toast({msg:"正在开始推送直播流！"});
+            }else if(ret.status == 2){
+                api.toast({msg:"已经在推送媒体流成功！"});
+            }
+        });
+        
+
+        //参数设置
+        //设置频道属性为视频直播模式
+        maplertc.setChannelProfile({profile:'liveVideo'});
+        //设置媒体模式
+        maplertc.setMediaProfile({audioProfile:'musicHighQuality', videoProfile:'480P'});
+
+        //加入频道
+        maplertc.joinChannel(session, function(ret) {
+           api.toast({msg:JSON.stringify(ret)});
+        });
+
+        
+        buttons = ['开始直播视频推流','停止直播视频推流', '开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '切换前后摄像头', '开关美颜', '设置美颜等级',  '切换大小屏幕','切换前置摄像头镜像输出','播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量'];
+        callback = function(ret) {
+            switch(ret.buttonIndex) {
+                case 1:
+                {
+                   //开始直播视频推流
+                   maplertc.startPublish({rtmpUrl:""}, function(ret) {
+                       api.toast({msg:JSON.stringify(ret)});
+                   });
+                   break;
+                }
+
+                case 2:
+                {
+                   //停止直播视频推流
+                   maplertc.stopPublish(function(ret) {
+                       api.toast({msg:JSON.stringify(ret)});
+                   });
+                   break;
+                }
+                               
+                case 3:
+                {
+                    var value;
+                    speakerphone = !speakerphone;
+                    if(speakerphone){
+                        value = 100;
+                    }else{
+                        value = 0;
+                    }
+                    //开关扬声器
+                    maplertc.adjustPlaybackSignalVolume({volume:value}, function(ret) {
+                        api.toast({msg:JSON.stringify(ret)});
+                    });
+                }
+                break;
+
+                case 4:
+                {
+                    mute = !mute;
+                    //开关麦克风
+                    maplertc.muteLocalAudioStream({muted : mute},  function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                }
+                break;
+
+                case 5:
+               {
+                    micAndSpeakerphone = !micAndSpeakerphone;
+                    //切换听筒和扬声器
+                    maplertc.setEnableSpeakerphone({enabled : micAndSpeakerphone},  function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                }
+                break;
+
+                case 6:
+                {
+                    isPreview = !isPreview;
+                    if(isPreview){
+                       //打开本地预览
+                       maplertc.startPreview(function(ret) {
+                           api.toast({msg:JSON.stringify(ret)});
+                       });
+                    }else{
+                       //关闭本地预览
+                       maplertc.stopPreview(function(ret) {
+                           api.toast({msg:JSON.stringify(ret)});
+                       });
+                    }
+                }
+                break;
+
+                case 7:
+                {
+                   //切换前后摄像头
+                   maplertc.switchCamera();
+                }
+                break;
+
+                case 8:
+                {
+                    isBeautify = !isBeautify;
+                    //开关美颜
+                    maplertc.enableBeautify({enabled: isBeautify}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                break;
+
+                case 9:
+                {
+                   inputBeautifyLevel();
+                   break;
+                }
+                break;
+
+                case 10:
+                {
+                    if(switchScreen){
+                        api.bringFrameToFront({ from: 'frm_remote', to: 'frm_local'})
+
+                        api.setFrameAttr({name:'frm_local', rect: {
+                                          x: 0,
+                                          y: $api.dom('header').offsetHeight,
+                                          w: api.winWidth,
+                                          h: api.winHeight,
+                                          }})
+                        
+                        api.setFrameAttr({name:'frm_remote', scaleEnabled: true, rect: {
+                                         x: api.winWidth - 130,
+                                         y: api.winHeight - 170,
+                                         w: 120,
+                                         h: 160
+                                         }})
+
+                        if (api.systemType == 'android'){
+                            maplertc.bringFrameToFront({ from: 'frm_remote', to: 'frm_local'}, function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                        }
+                    }else{
+                        api.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'})
+                        
+                        api.setFrameAttr({name:'frm_local', scaleEnabled: true,  rect: {
+                                    x: api.winWidth - 130,
+                                    y: api.winHeight - 170,
+                                    w: 120,
+                                    h: 160
+                        }})
+
+                        api.setFrameAttr({name:'frm_remote', scaleEnabled: true,  rect: {
+                                         x: 0,
+                                         y: $api.dom('header').offsetHeight,
+                                         w: api.winWidth,
+                                         h: api.winHeight,
+                                         }})
+                        
+                        if (api.systemType == 'android'){
+                            maplertc.bringFrameToFront({ from: 'frm_local', to: 'frm_remote'}, function(ret) {
+                                api.toast({msg:JSON.stringify(ret)});
+                            });
+                        }
+                    }
+                    switchScreen = !switchScreen;
+                }
+                break;
+                
+                case 11:
+                {
+                    isFrontOutputMirror = !isFrontOutputMirror;
+                    //切换前置摄像头镜像输出
+                    maplertc.enableFrontOutputMirror({enabled: isFrontOutputMirror}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                case 12:
+                {
+                    maplertc.startPlayMedia({path: "", type:2, cycle:1, mediaView: {fixedOn: 'frm_remote'}}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                                            isPausedMedia = false;
+                                            isMutedMedia = false;
+                    });
+                    break;
+                }
+                case 13:
+                {
+                    isPausedMedia = !isPausedMedia;
+                    maplertc.pausePlayMedia({paused: isPausedMedia}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                case 14:
+                {
+                    maplertc.stopPlayMedia(function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                case 15:
+                {
+                    isMutedMedia = !isMutedMedia;
+                    maplertc.mutePlayMedia({muted: isMutedMedia}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                case 16:
+                {
+                    maplertc.adjustPlayMediaVolume({volume: 50}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+            }
+        };
+    };
+
+    function inputBeautifyLevel() {
+        api.prompt({
+               title: '输入美颜等级（0.0～1.0）',
+               buttons: ['确定', '取消']
+               },function( ret, err ){
+                   var level = ret.text;
+                   if (ret.buttonIndex != 1)
+                        return;
+                   //设置美颜等级
+                   maplertc.setBeautifyLevel({level: level}, function(ret) {
+                       api.toast({msg:JSON.stringify(ret)});
+                   });
+               });
+    }
+
+
+    function funActionSheet(){
+        api.actionSheet({
+            title: '底部弹出框',
+            cancelTitle: '取消',
+            buttons: buttons
+        },function(ret,err){
+            callback(ret);
+        });
+    }
+
+    function goback() {
+        stopSDK();
+        api.closeWin();
+    }
+
+function stopSDK() {
+    if (maplertc)
+        maplertc.leaveChannel();
+}
+
+</script>
