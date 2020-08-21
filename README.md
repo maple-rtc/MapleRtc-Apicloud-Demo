@@ -6,7 +6,7 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 - 完整的 API 文档见 [文档中心](http://doc.lmaple.com/maple-rtc-apicloud-sdk.html)
 
 ----------
-这个开源项目演示了如何快速集成 maple-rtc SDK 到 apicloud 中，实现在apicloud应用中音频通话效果。
+这个开源项目演示了如何快速集成 maple-rtc SDK 到 apicloud 中，实现在apicloud应用中音视频通话效果。
 
 在这个示例项目中包含了以下功能：
 - 加入通话和离开通话；
@@ -20,6 +20,8 @@ maple-rtc 为[蓝蘑云](http://www.lmaple.com)推出的实时音视频系统，
 - 切换前后摄像头功能；
 - 播放/暂停媒体音乐；
 - 直播媒体音乐;
+- 视频直播推流；
+- 视频直播拉流；
 
 
 ## 运行示例程序
