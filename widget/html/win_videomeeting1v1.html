@@ -43,6 +43,7 @@
     var isRemoteVideo = false;
     var isBeautify = false;
     var isFrontOutputMirror = false;
+    var isBackCameraTorchOn = false;
     var isPausedMedia = true;
     var isMutedMedia = true;
 
@@ -222,7 +223,7 @@
         });
 
         
-        buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级', '切换大小屏幕', '切换前置摄像头镜像输出','播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置'];
+        buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级', '切换大小屏幕', '切换前置摄像头镜像输出','开关摄像头闪光灯', '播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置'];
         callback = function(ret) {
             switch(ret.buttonIndex) {
                 case 1:
@@ -379,60 +380,69 @@
                 }
                 case 12:
                 {
-                    maplertc.startPlayMedia({path: "http://share.lmaple.com/test.mp3", type:3, cycle:1}, function(ret) {
+                    isBackCameraTorchOn = !isBackCameraTorchOn;
+                    //开关后置摄像头闪光灯
+                    maplertc.setCameraTorchOn({enabled: isBackCameraTorchOn}, function(ret) {
+                        api.toast({msg:JSON.stringify(ret)});
+                    });
+					break;
+                }
+                case 13:
+                {
+                    maplertc.startPlayMedia({path: "http://share.lmaple.com/test.mp3", type:3, cycle:1, index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                                             isPausedMedia = false;
                                             isMutedMedia = false;
                     });
                     break;
                 }
-                case 13:
-                {
-                    isPausedMedia = !isPausedMedia;
-                    maplertc.pausePlayMedia({paused: isPausedMedia}, function(ret) {
-                            api.toast({msg:JSON.stringify(ret)});
-                    });
-                    break;
-                }
                 case 14:
                 {
-                    maplertc.stopPlayMedia(function(ret) {
+                    isPausedMedia = !isPausedMedia;
+                    maplertc.pausePlayMedia({paused: isPausedMedia, index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
                 case 15:
                 {
-                    isMutedMedia = !isMutedMedia;
-                    maplertc.mutePlayMedia({muted: isMutedMedia}, function(ret) {
+                    maplertc.stopPlayMedia({index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
                 case 16:
                 {
-                    maplertc.adjustPlayMediaVolume({volume: 50}, function(ret) {
+                    isMutedMedia = !isMutedMedia;
+                    maplertc.mutePlayMedia({muted: isMutedMedia, index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
                 case 17:
                 {
-                    maplertc.setPlayMediaPosition({position: 10000}, function(ret) {
+                    maplertc.adjustPlayMediaVolume({volume: 50, index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
                 case 18:
                 {
-                    maplertc.getPlayMediaTotalDuration(function(ret) {
+                    maplertc.setPlayMediaPosition({position: 10000, index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
                 case 19:
                 {
-                    maplertc.getPlayMediaCurrentPosition(function(ret) {
+                    maplertc.getPlayMediaTotalDuration({index:1}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                case 20:
+                {
+                    maplertc.getPlayMediaCurrentPosition({index:1}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
