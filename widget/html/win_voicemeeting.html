@@ -36,6 +36,7 @@
     var buttons;
     var callback;
     var mute = false;
+    var is_open_mic = true;
     var speakerphone = true;
     var micAndSpeakerphone = true;
     var switchScreen = true;
@@ -152,7 +153,7 @@
         });
 
         
-        buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器','播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置'];
+        buttons = ['开关扬声器','开关麦克风','开关本地音频流','切换听筒和扬声器','播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置'];
         callback = function(ret) {
             switch(ret.buttonIndex) {
                 case 1:
@@ -173,15 +174,31 @@
 
                 case 2:
                 {
-                    mute = !mute;
                     //开关麦克风
+                    if(is_open_mic){
+                        maplertc.stopLocalAudio(function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                        });
+                    }else{
+                        maplertc.startLocalAudio(function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                        });
+                    }
+                    is_open_mic = !is_open_mic;
+                }
+                break;
+
+                case 3:
+                {
+                    mute = !mute;
+                    //开关本地音频流
                     maplertc.muteLocalAudioStream({muted : mute},  function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                 }
                 break;
 
-                case 3:
+                case 4:
                {
                     micAndSpeakerphone = !micAndSpeakerphone;
                     //切换听筒和扬声器
@@ -191,7 +208,7 @@
                 }
                 break;
 
-                case 4:
+                case 5:
                 {
                     maplertc.startPlayMedia({path: "http://share.lmaple.com/test.mp3", type:3, cycle:1, mediaView: {}}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
@@ -200,7 +217,7 @@
                     });
                     break;
                 }
-                case 5:
+                case 6:
                 {
                     isPausedMedia = !isPausedMedia;
                     maplertc.pausePlayMedia({paused: isPausedMedia}, function(ret) {
@@ -208,14 +225,14 @@
                     });
                     break;
                 }
-                case 6:
+                case 7:
                 {
                     maplertc.stopPlayMedia(function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
-                case 7:
+                case 8:
                 {
                     isMutedMedia = !isMutedMedia;
                     maplertc.mutePlayMedia({muted: isMutedMedia}, function(ret) {
@@ -223,28 +240,28 @@
                     });
                     break;
                 }
-                case 8:
+                case 9:
                 {
                     maplertc.adjustPlayMediaVolume({volume: 50}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
-                case 9:
+                case 10:
                 {
                     maplertc.setPlayMediaPosition({position: 10000}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
-                case 10:
+                case 11:
                 {
                     maplertc.getPlayMediaTotalDuration(function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
                 }
-                case 11:
+                case 12:
                 {
                     maplertc.getPlayMediaCurrentPosition(function(ret) {
                             api.toast({msg:JSON.stringify(ret)});

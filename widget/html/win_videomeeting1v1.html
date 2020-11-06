@@ -34,6 +34,7 @@
     var buttons;
     var callback;
     var mute = false;
+    var is_open_mic = true;
     var speakerphone = true;
     var micAndSpeakerphone = true;
     var switchScreen = true;
@@ -223,7 +224,7 @@
         });
 
         
-        buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级', '切换大小屏幕', '切换前置摄像头镜像输出','开关摄像头闪光灯', '播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置'];
+        buttons = ['开关扬声器','开关麦克风','切换听筒和扬声器', '开关本地预览', '开始停止发送本地视频', '切换前后摄像头', '开关显示远端视频','开关美颜', '设置美颜等级', '切换大小屏幕', '切换前置摄像头镜像输出','开关摄像头闪光灯', '播放媒体文件','暂停媒体','停止媒体','静音媒体','调节媒体音量','设置媒体播放位置','获取总时长','获取当前播放位置','开关本地音频流'];
         callback = function(ret) {
             switch(ret.buttonIndex) {
                 case 1:
@@ -244,11 +245,17 @@
 
                 case 2:
                 {
-                    mute = !mute;
                     //开关麦克风
-                    maplertc.muteLocalAudioStream({muted : mute},  function(ret) {
+                    if(is_open_mic){
+                        maplertc.stopLocalAudio(function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
-                    });
+                        });
+                    }else{
+                        maplertc.startLocalAudio(function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                        });
+                    }
+                    is_open_mic = !is_open_mic;
                 }
                 break;
 
@@ -443,6 +450,15 @@
                 case 20:
                 {
                     maplertc.getPlayMediaCurrentPosition({index:1}, function(ret) {
+                            api.toast({msg:JSON.stringify(ret)});
+                    });
+                    break;
+                }
+                case 21:
+                {
+                    mute = !mute;
+                    //开关麦克风
+                    maplertc.muteLocalAudioStream({muted : mute},  function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                     });
                     break;
