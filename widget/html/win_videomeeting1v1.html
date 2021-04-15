@@ -235,7 +235,9 @@
             api.toast({msg: JSON.stringify(ret) });
         });
         //设置媒体模式
-        maplertc.setMediaProfile({audioProfile:'voiceHighQuality', videoProfile:'360P'});
+        maplertc.setMediaProfile({audioProfile:'musicHighQuality', videoProfile:'480P'});
+        maplertc.setAudioConferenceProfile({profile:'sfu'});
+        maplertc.setVideoConferenceProfile({profile:'sfu'});
         
         //加入频道
         maplertc.joinChannel(session, function(ret) {

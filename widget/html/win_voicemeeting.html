@@ -142,7 +142,8 @@
         //参数设置
         //设置频道属性为音频
         maplertc.setChannelProfile({profile:'voiceOnly'});
-		
+		maplertc.setAudioConferenceProfile({profile:'sfu'});
+
 		//设置媒体模式
         maplertc.setMediaProfile({audioProfile:'musicHighQuality', videoProfile:'360P'});
 

@@ -218,8 +218,9 @@
         maplertc.setChannelProfile({profile:'voiceAndVideo'});
         //设置MCU模式
         maplertc.setVideoConferenceProfile({profile:'mcu'});
+        maplertc.setAudioConferenceProfile({profile:'mcu'});
         //设置媒体模式
-        maplertc.setMediaProfile({audioProfile:'voiceHighQuality', videoProfile:'360P'});
+        maplertc.setMediaProfile({audioProfile:'musicHighQuality', videoProfile:'480P'});
 
         //加入频道
         maplertc.joinChannel(session, function(ret) {
