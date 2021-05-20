@@ -490,7 +490,7 @@
                             api.toast({msg:JSON.stringify(ret)});
                     });
 
-                    maplertc.startPlayMedia({path:"http://share.lmaple.com/test.mkv", type:3, cycle:1, mediaView: {fixedOn: 'frm_local_media'}}, function(ret) {
+                    maplertc.startPlayMedia({path:"http://share.lmaple.com/test.mkv", type:3, cycle:1, renderMode:2, mediaView: {fixedOn: 'frm_local_media'}}, function(ret) {
                             api.toast({msg:JSON.stringify(ret)});
                                             isPausedMedia = false;
                                             isMutedMedia = false;
