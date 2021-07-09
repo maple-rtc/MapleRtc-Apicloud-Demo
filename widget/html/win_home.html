@@ -85,6 +85,13 @@
                         <p>简介:蓝蘑云apicloud音视频演示程序,随意输入相同房间号，不同用户ID.</p>
                      </div>
                  </div>
+                 <div tapmode="hover" onclick="inputRoomInfo(this, 6 );" class="flex-wrap flex-con flex-2 layout-wrap">
+                     <div class="flex-con layout ic-hot">
+                         <h6>点击登录</h6>
+                         <h7>屏幕分享</h7>
+                         <p>简介:蓝蘑云apicloud音视频演示程序，随意输入相同房间号，不同用户ID。</p>
+                     </div>
+                 </div>
              </div>
         </div>
     </div>
@@ -230,6 +237,26 @@ var inputRoomInfo = function(tag, index) {
                                 }
                             });
                             
+                            break;
+                        }
+                        case 6:
+                        {
+                            session = {
+                                channelId: channelId,
+                                userId: userId,
+                                enableMic:true
+                            };
+
+                            api.openWin({
+                                name: 'screenshare',
+                                url: './win_screenshare.html',
+                                pageParam: {
+                                    index: index,
+                                    name: tag.querySelector('h7').innerHTML,
+                                    session:session
+                                }
+                            });
+
                             break;
                         }
                     }
